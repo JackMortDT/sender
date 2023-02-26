@@ -11,6 +11,10 @@ defmodule Sender do
       iex> Sender.send_email("hello@world.com")
       {:ok, "email_sent"}
   """
+
+  def send_email("konnichiwa@world.com" = email),
+    do: raise("Oops, couldn't send email to #{email}!")
+
   def send_email(email) do
     Process.sleep(3000)
     IO.puts("Email to #{email} sent")
@@ -37,8 +41,8 @@ defmodule Sender do
       ]
   """
   def notify_all(emails) do
-    emails
-    |> Task.async_stream(&send_email/1, ordered: false)
+    Sender.EmailTaskSupervisor
+    |> Task.Supervisor.async_stream_nolink(emails, &send_email/1)
     |> Enum.to_list()
   end
 end

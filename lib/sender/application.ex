@@ -8,8 +8,18 @@ defmodule Sender.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Starts a worker by calling: Sender.Worker.start_link(arg)
-      # {Sender.Worker, arg}
+      {Task.Supervisor, name: Sender.EmailTaskSupervisor}
+      # Using a map is more verbose, but it allows you to set other configuration options in the map,
+      # in addition to the :id and :start values
+      # %{
+      #   id: Sender.EmailTaskSupervisor,
+      #
+      #   start: {
+      #     Task.Supervisor,
+      #     :start_link,
+      #     [[name: Sender.EmailTaskSupervisor]]
+      #   }
+      #  }
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
