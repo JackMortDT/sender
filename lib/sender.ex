@@ -29,13 +29,16 @@ defmodule Sender do
       ...>   "konnichiwa@world.com"
       ...> ]
       iex> Sender.notify_all(emails)
-      [ok: "email_sent", ok: "email_sent", ok: "email_sent", ok: "email_sent"]
+      [
+        ok: {:ok, "email_sent"},
+        ok: {:ok, "email_sent"},
+        ok: {:ok, "email_sent"},
+        ok: {:ok, "email_sent"}
+      ]
   """
   def notify_all(emails) do
     emails
-    |> Enum.map(fn email ->
-      Task.async(fn -> send_email(email) end)
-    end)
-    |> Enum.map(&Task.await/1)
+    |> Task.async_stream(&send_email/1, ordered: false)
+    |> Enum.to_list()
   end
 end
